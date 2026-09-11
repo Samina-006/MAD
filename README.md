@@ -1,0 +1,1 @@
+setState(() {...}) tells Flutter that something in the app has changed and the screen needs to be updated. In this app, I use it when I increase the counter or reset it, so the new counter value and reset count appear on the screen. If I change the variable without using setState(), Flutter does not know that the UI needs to refresh, so the old value may still be shown.
