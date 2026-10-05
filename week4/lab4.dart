@@ -62,7 +62,29 @@ class OrderLog {
 
   void add(String msg) => entries.add(msg);
 }
+class OrderLine {
+  final MenuItem item;
+  final int qty;
+  final int total;
+  final int tax;
 
+  OrderLine(this.item, this.qty)
+      : total = item.price * qty,
+        tax = (item.price * qty) * taxPercent ~/ 100,
+        assert(qty > 0);
+
+  int get grand => total + tax;
+
+  bool get isBigOrder => grand > bigOrderLimit;
+
+  String get label => '${item.name} x $qty';
+}
+OrderLine mainOrder() {
+  return OrderLine(
+    MenuItem(menu[u], priceOf(u)),
+    2 + (t + u) % 5,
+  );
+}
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -133,12 +155,28 @@ void step4() {
 }
 /* The underscore makes _instance and _internal private to this library.
  Without it, outside code could access them directly and bypass the factory.*/
-void step5() {
-  print('--- Step 5 ---');
-}
+void step5() { 
+  /*Answer : An initializer list cannot read another instance field because the object is not fully initialized yet.*/
+  var line = mainOrder();
 
+  print('Step 5: ${line.item.name} x ${line.qty}');
+  print('Step 5: total=${line.total}, tax=${line.tax}');
+
+  try {
+    OrderLine(MenuItem('Bad', 100), 0);
+  } catch (e) {
+    print('Step 5: caught ${e.runtimeType}');
+  }
+}
 void step6() {
-  print('--- Step 6 ---');
+  /* Answer: ->line.grand = 5 fails because grand has only a getter, so it can be
+-> read but not changed. To make assignment legal, we would need to add
+-> a setter for grand.*/
+  var line = mainOrder();
+
+  print('Step 6: grand=${line.grand}');
+  print('Step 6: big=${line.isBigOrder}');
+  print('Step 6: label=${line.label}');
 }
 
 void step7() {
