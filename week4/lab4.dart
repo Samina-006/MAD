@@ -50,6 +50,18 @@ class MenuItem {
       : name = text.split(':')[0],
         price = int.parse(text.split(':')[1]);
 }
+class OrderLog {
+  static OrderLog? _instance;
+  final List<String> entries = [];
+
+  OrderLog._internal();
+
+  factory OrderLog() {
+    return _instance ??= OrderLog._internal();
+  }
+
+  void add(String msg) => entries.add(msg);
+}
 
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
@@ -102,9 +114,25 @@ void step3() { //// The floor logic did not run because free() is a separate nam
 }
 
 void step4() {
-  print('--- Step 4 ---');
-}
+  var log1 = OrderLog();
+  var log2 = OrderLog();
 
+  for (var i = 1; i <= u + 2; i++) {
+    var message = 'order #${100 * t + i}';
+
+    if (i % 2 == 1) {
+      log1.add(message);
+    } else {
+      log2.add(message);
+    }
+  }
+
+  print('Step 4: same object? ${identical(log1, log2)}');
+  print('Step 4: entries = ${log1.entries.length}');
+  print('Step 4: last = ${log2.entries.last}');
+}
+/* The underscore makes _instance and _internal private to this library.
+ Without it, outside code could access them directly and bypass the factory.*/
 void step5() {
   print('--- Step 5 ---');
 }
