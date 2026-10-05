@@ -77,13 +77,31 @@ class OrderLine {
 
   bool get isBigOrder => grand > bigOrderLimit;
 
-  String get label => '${item.name} x $qty';
+  String get label => '${item.name} x$qty';
 }
 OrderLine mainOrder() {
   return OrderLine(
     MenuItem(menu[u], priceOf(u)),
     2 + (t + u) % 5,
   );
+}
+class StudentCard {
+  final String owner;
+  int _balance;
+
+  StudentCard(this.owner) : _balance = 0;
+
+  int get balance => _balance;
+
+  set balance(int v) {
+    if (v < 0) {
+      _balance = 0;
+    } else if (v > balanceCap) {
+      _balance = balanceCap;
+    } else {
+      _balance = v;
+    }
+  }
 }
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
@@ -172,15 +190,30 @@ void step6() {
   /* Answer: ->line.grand = 5 fails because grand has only a getter, so it can be
 -> read but not changed. To make assignment legal, we would need to add
 -> a setter for grand.*/
+
   var line = mainOrder();
 
   print('Step 6: grand=${line.grand}');
-  print('Step 6: big=${line.isBigOrder}');
+  print('Step 6: big order? ${line.isBigOrder} (limit $bigOrderLimit)');
   print('Step 6: label=${line.label}');
 }
 
 void step7() {
-  print('--- Step 7 ---');
+  /*Answer  For an invalid value, a setter could throw an exception or show an error
+ message instead of silently changing the value.*/
+  var card = StudentCard('S$seed');
+
+  card.balance = seed * 10 + 50;
+  print('Step 7: topped up -> ${card.balance}');
+
+  card.balance = -seed - 1;
+  print('Step 7: bad value -> ${card.balance}');
+
+  card.balance = balanceCap - u;
+  print('Step 7: reset -> ${card.balance}');
+
+  card.balance = card.balance - mainOrder().grand;
+  print('Step 7: paid order -> ${card.balance}');
 }
 
 void step8() {
