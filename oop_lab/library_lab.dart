@@ -1,5 +1,4 @@
 
-
  // library_lab.dart - Campus Library System
 // Name: Samina Shahid
 // Roll no: 04072313018
@@ -27,6 +26,82 @@ final int renewAttempts = 2 + u;            // renewal attempts made in Step 5
 final int shelfSize = 3 + u % 4;            // items on the shelf in Steps 9-10
 // ==========================================================================
 
+
+abstract class LibraryItem {
+  final String title;
+  final int year;
+
+  LibraryItem(this.title, this.year);
+
+  String describe() => '$title ($year)';
+
+  int lateFee(int days);
+}
+
+
+
+
+class Book extends LibraryItem {
+  final int pages;
+
+  Book(super.title, super.year, this.pages);
+
+  @override
+  String describe() => '${super.describe()}, $pages pages';
+
+  @override
+  int lateFee(int days) => days * feePerDay;
+}
+
+Book mainBook() {
+  return Book(titles[u], yearOf(u), 100 + 3 * seed);
+}
+
+
+class Magazine extends LibraryItem {
+  final int issue;
+
+  Magazine(super.title, super.year, this.issue);
+
+  @override
+  String describe() => '${super.describe()}, issue $issue';
+
+  @override
+  int lateFee(int days) => days * (feePerDay ~/ 2);
+}
+
+
+Magazine mainMagazine() {
+  int i = (u + 1) % 10;
+  return Magazine(
+    titles[i],
+    yearOf(i),
+    1 + (t + u) % 12,
+  );
+}
+
+
+class Dvd extends LibraryItem {
+  final int minutes;
+
+  Dvd(super.title, super.year, this.minutes);
+
+  @override
+  String describe() => '${super.describe()}, $minutes min';
+
+  @override
+  int lateFee(int days) => days * feePerDay * 2;
+}
+
+Dvd mainDvd() {
+  int i = (u + 2) % 10;
+  return Dvd(
+    titles[i],
+    yearOf(i),
+    90 + seed % 40,
+  );
+}
+
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -41,9 +116,49 @@ void main() {
   step10();
 }
 
-void step1() { print('--- Step 1 ---'); }
-void step2() { print('--- Step 2 ---'); }
-void step3() { print('--- Step 3 ---'); }
+
+void step1() {
+  print('--- Step 1 ---');
+
+  Book b = mainBook();
+  LibraryItem item = b;
+
+  print('Step 1: ${b.title} (${b.year}), ${b.pages} pages');
+  print('Step 1: stored as LibraryItem: ${item.title}');
+  print('Step 1: runtimeType = ${item.runtimeType}');
+  /*Answer item.pages causes a compile-time error because item is declared as LibraryItem, and the pages attribute is defined only in the Book class.*/
+}
+
+
+void step2() {
+  print('--- Step 2 ---');
+  print('Step 2: ${mainBook().describe()}');
+  print('Step 2: ${mainMagazine().describe()}');
+  /*Answer: With @override: Dart reports an error because descibe() does not match a method in the parent class.
+Without @override: Dart may accept descibe() as a new method. When you call mainBook().describe(), Dart uses the inherited describe() method instead, so the output will be Database Systems (2012) without , 154 pages
+*/
+
+ 
+}
+
+
+void step3() {
+  print('--- Step 3 ---');
+
+  print(
+    'Step 3: Book late fee for $daysLate days = ${mainBook().lateFee(daysLate)}',
+  );
+  print(
+    'Step 3: Magazine late fee for $daysLate days = ${mainMagazine().lateFee(daysLate)}',
+  );
+  print(
+    'Step 3: Dvd late fee for $daysLate days = ${mainDvd().lateFee(daysLate)}',
+  );
+
+  /*An abstract class can contain methods without implementations. For example, lateFee() has no body in LibraryItem. Dart prevents you from creating a direct object of this class because it does not provide the complete behaviour required by the abstract contract.
+Instead, you create a concrete subclass such as Book, Magazine, or Dvd, each of which implements lateFee().*/
+}
+
 void step4() { print('--- Step 4 ---'); }
 void step5() { print('--- Step 5 ---'); }
 void step6() { print('--- Step 6 ---'); }
