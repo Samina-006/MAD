@@ -14,3 +14,5 @@ Step05:
 Answer: A mixin allows us to reuse the same renewal code in Book and Dvd without duplicating it. Magazine does not need renewal behaviour, so placing renew() in LibraryItem would give the feature to every library item. The Renewable mixin allows only the classes that need it to use this behaviour
 Step06:
 /*Answer: MemberType.student refers to a predefined enum value, so Dart can check that the value belongs to the MemberType enum. A string such as 'student' can contain spelling mistakes or invalid names. Using an enum makes membership types more reliable and helps prevent invalid values.*/
+Step07:
+Answer: An extension lets me use a useful operation directly on an existing type without modifying its original class. Writing 72.rs is convenient and readable because the formatting operation is attached to the integer value. It also keeps related operations organised under an extension.
