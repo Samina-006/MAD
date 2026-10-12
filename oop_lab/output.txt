@@ -26,6 +26,9 @@ Step 6: member type = student (index 0)
 Step 6: max loans = 3
 Step 6: book fee 36 -> 18 after discount
 --- Step 7 ---
+Step 7: Rs 18
+Step 7: initials of "Database Systems" = DS
+Step 7: shelf fee for 6 days = Rs 126
 --- Step 8 ---
 --- Step 9 ---
 --- Step 10 ---
