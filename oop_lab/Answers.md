@@ -1,22 +1,15 @@
-Step01:
-Answer item.pages causes a compile-time error because item is declared as LibraryItem, and the pages attribute is defined only in the Book class.
-Step02: 
-Answer: With @override: Dart reports an error because descibe() does not match a method in the parent class.
-Without @override: Dart may accept descibe() as a new method. When you call mainBook().describe(), Dart uses the inherited describe() method instead, so the output will be Database Systems (2012) without , 154 pages
-Step03:
-Answer:/*An abstract class can contain methods without implementations. For example, lateFee() has no body in LibraryItem. Dart prevents you from creating a direct object of this class because it does not provide the complete behaviour required by the abstract contract.
-Instead, you create a concrete subclass such as Book, Magazine, or Dvd, each of which implements lateFee().*/
-Step04:
-Answer: /*Answer: With @override: Dart reports an error because descibe() does not match a method in the parent class.
-Without @override: Dart may accept descibe() as a new method. When you call mainBook().describe(), Dart uses the inherited describe() method instead, so the output will be Database Systems (2012) without , 154 pages
-*/
-Step05:
-Answer: A mixin allows us to reuse the same renewal code in Book and Dvd without duplicating it. Magazine does not need renewal behaviour, so placing renew() in LibraryItem would give the feature to every library item. The Renewable mixin allows only the classes that need it to use this behaviour
-Step06:
-/*Answer: MemberType.student refers to a predefined enum value, so Dart can check that the value belongs to the MemberType enum. A string such as 'student' can contain spelling mistakes or invalid names. Using an enum makes membership types more reliable and helps prevent invalid values.*/
-Step07:
-Answer: An extension lets me use a useful operation directly on an existing type without modifying its original class. Writing 72.rs is convenient and readable because the formatting operation is attached to the integer value. It also keeps related operations organised under an extension.
-Step08:
-/*Answer: Without the custom hashCode, two Fine objects with the same amount may have different hash codes. A set uses both hashCode and == to identify unique values, so it may keep equal objects as separate entries. Dart expects equal objects to have equal hash codes so collections such as Set can handle equality correctly. With both methods implemented, the set size is 2.8*/
-Step09:
- /*Answer:because created is a static variable, it belongs to the LibraryItem class itself, not to individual objects. Therefore, we can access it directly using LibraryItem.created without creating an object first.*/
+### Q1. What can a subclass using `extends` use for free that a class using `implements` has to write itself?
+
+When a class uses "extends", it inherits the methods and properties already implemented in its parent class, so it does not need to write them again unless it wants to change their behaviour. However, when a class uses "implements", it only follows the interface or contract of another class and must provide its own implementation of all the required methods and properties.
+
+### Q2. Book and Dvd both use Renewable. When would you pick a mixin, and when an abstract parent class?
+
+I would use a mixin when different classes need the same behaviour but do not need to share the same parent class. For example, both Book and Dvd use the Renewable mixin to renew items without duplicating the code. I would use an abstract parent class when related classes share common properties or behaviour and need to follow the same basic structure, such as LibraryItem.
+
+### Q3. Why must you override `hashCode` whenever you override `==`?
+
+When we override "==", we define when two objects should be considered equal. We must also make sure that equal objects have the same "hashCode". Collections such as Set use both "==" and "hashCode" to identify unique objects. If these methods are inconsistent, a Set may treat equal objects as separate entries.
+
+### Q4. An extension method on String and a subclass of String both add behaviour. Why does Dart let you write the first one but not the second?
+
+Dart allows extension methods because they add extra functionality to an existing type without changing or modifying its original class. However, String is a special built-in type that cannot be extended through inheritance to create a subclass. An extension is useful because it lets us add convenient operations, such as getting the initials of a string, without changing how String itself works.
