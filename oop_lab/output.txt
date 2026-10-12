@@ -4,6 +4,8 @@ Step 1: Database Systems (2012), 154 pages
 Step 1: stored as LibraryItem: Database Systems
 Step 1: runtimeType = Book
 --- Step 2 ---
+Step 2: Database Systems (2012), 154 pages
+Step 2: Software Testing (2014), issue 10
 --- Step 3 ---
 --- Step 4 ---
 --- Step 5 ---
