@@ -41,8 +41,10 @@ abstract class LibraryItem {
 
 
 
-class Book extends LibraryItem {
+
+class Book extends LibraryItem implements Borrowable {
   final int pages;
+  bool _out = false;
 
   Book(super.title, super.year, this.pages);
 
@@ -51,6 +53,19 @@ class Book extends LibraryItem {
 
   @override
   int lateFee(int days) => days * feePerDay;
+
+  @override
+  bool get isAvailable => !_out;
+
+  @override
+  void borrow() {
+    _out = true;
+  }
+
+  @override
+  void giveBack() {
+    _out = false;
+  }
 }
 
 Book mainBook() {
@@ -100,6 +115,14 @@ Dvd mainDvd() {
     yearOf(i),
     90 + seed % 40,
   );
+}
+
+abstract class Borrowable {
+  bool get isAvailable;
+
+  void borrow();
+
+  void giveBack();
 }
 
 void main() {
@@ -159,7 +182,35 @@ void step3() {
 Instead, you create a concrete subclass such as Book, Magazine, or Dvd, each of which implements lateFee().*/
 }
 
-void step4() { print('--- Step 4 ---'); }
+
+void step4() {
+  print('--- Step 4 ---');
+
+  Book book = mainBook();
+
+  print('Step 4: available? ${book.isAvailable}');
+
+  book.borrow();
+  print('Step 4: after borrow? ${book.isAvailable}');
+
+  book.giveBack();
+  print('Step 4: after return? ${book.isAvailable}');
+
+  List<LibraryItem> items = [
+    book,
+    mainMagazine(),
+    mainDvd(),
+  ];
+
+  for (LibraryItem item in items) {
+    print(
+      'Step 4: ${item.runtimeType} borrowable? ${item is Borrowable}',
+    );
+  }
+
+  /* Using extends would allow a class to inherit the available implementation from its parent. However, Borrowable defines the required members without providing their implementations, so we must write the borrowing behaviour ourselves. Also, Book already extends LibraryItem, and Dart allows only one superclass. Therefore, implements Borrowable is appropriate because it lets Book inherit from LibraryItem while fulfilling the borrowing contract.*/
+}
+
 void step5() { print('--- Step 5 ---'); }
 void step6() { print('--- Step 6 ---'); }
 void step7() { print('--- Step 7 ---'); }
