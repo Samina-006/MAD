@@ -30,5 +30,16 @@ Step 7: Rs 18
 Step 7: initials of "Database Systems" = DS
 Step 7: shelf fee for 6 days = Rs 126
 --- Step 8 ---
+Step 8: Fine(36) + Fine(18) = Fine(54)
+Step 8: first bigger? true
+Step 8: equal copies? true
+Step 8: set size = 2
 --- Step 9 ---
+Step 9: items created = 6
+Step 9: capped fee = 108 (cap 160)
+Step 9: const copies identical? true
+Step 9: new copies identical? false
 --- Step 10 ---
+Step 10: 3 items, 1 borrowable, 2 renewable
+Step 10: S18 (student) owes Fine(63)
+Step 10: over the cap? false
