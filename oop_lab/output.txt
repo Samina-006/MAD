@@ -11,6 +11,12 @@ Step 3: Book late fee for 6 days = 36
 Step 3: Magazine late fee for 6 days = 18
 Step 3: Dvd late fee for 6 days = 72
 --- Step 4 ---
+Step 4: available? true
+Step 4: after borrow? false
+Step 4: after return? true
+Step 4: Book borrowable? true
+Step 4: Magazine borrowable? false
+Step 4: Dvd borrowable? false
 --- Step 5 ---
 --- Step 6 ---
 --- Step 7 ---
