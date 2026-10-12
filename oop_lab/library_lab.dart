@@ -139,6 +139,20 @@ mixin Renewable {
 }
 
 
+enum MemberType {
+  student(3, 50),
+  faculty(10, 20),
+  guest(1, 0);
+
+  final int maxLoans;
+  final int discountPercent;
+
+  const MemberType(this.maxLoans, this.discountPercent);
+
+  int applyDiscount(int fee) =>
+      fee - (fee * discountPercent ~/ 100);
+}
+
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -247,7 +261,24 @@ void step5() {
   /*Answer: A mixin allows us to reuse the same renewal code in Book and Dvd without duplicating it. Magazine does not need renewal behaviour, so placing renew() in LibraryItem would give the feature to every library item. The Renewable mixin allows only the classes that need it to use this behaviour.*/
 }
 
-void step6() { print('--- Step 6 ---'); }
+
+void step6() {
+  print('--- Step 6 ---');
+
+  MemberType type = MemberType.values[seed % 3];
+  int fee = mainBook().lateFee(daysLate);
+
+  print(
+    'Step 6: member type = ${type.name} (index ${type.index})',
+  );
+  print('Step 6: max loans = ${type.maxLoans}');
+  print(
+    'Step 6: book fee $fee -> ${type.applyDiscount(fee)} after discount',
+  );
+
+  /*Answer: MemberType.student refers to a predefined enum value, so Dart can check that the value belongs to the MemberType enum. A string such as 'student' can contain spelling mistakes or invalid names. Using an enum makes membership types more reliable and helps prevent invalid values.*/
+}
+
 void step7() { print('--- Step 7 ---'); }
 void step8() { print('--- Step 8 ---'); }
 void step9() { print('--- Step 9 ---'); }
