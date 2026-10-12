@@ -27,16 +27,26 @@ final int shelfSize = 3 + u % 4;            // items on the shelf in Steps 9-10
 // ==========================================================================
 
 
+
 abstract class LibraryItem {
+  static int created = 0;
+
   final String title;
   final int year;
 
-  LibraryItem(this.title, this.year);
+  LibraryItem(this.title, this.year) {
+    created++;
+  }
+
+  static int capFee(int fee) {
+    return fee > feeCap ? feeCap : fee;
+  }
 
   String describe() => '$title ($year)';
 
   int lateFee(int days);
 }
+
 
 
 
@@ -167,6 +177,67 @@ extension ShelfMath on List<LibraryItem> {
       fold(0, (sum, item) => sum + item.lateFee(days));
 }
 
+List<LibraryItem> buildShelf() {
+  List<LibraryItem> shelf = [];
+
+  for (int k = 0; k < shelfSize; k++) {
+    int i = (u + k) % 10;
+
+    if (k % 3 == 0) {
+      shelf.add(
+        Book(titles[i], yearOf(i), 100 + 3 * seed),
+      );
+    } else if (k % 3 == 1) {
+      shelf.add(
+        Magazine(titles[i], yearOf(i), 1 + (t + k) % 12),
+      );
+    } else {
+      shelf.add(
+        Dvd(titles[i], yearOf(i), 90 + seed % 40),
+      );
+    }
+  }
+
+  return shelf;
+}
+
+
+
+class Fine {
+  final int amount;
+
+  const Fine(this.amount);
+
+  Fine operator +(Fine o) => Fine(amount + o.amount);
+
+  bool operator >(Fine o) => amount > o.amount;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Fine && other.amount == amount;
+
+  @override
+  int get hashCode => amount.hashCode;
+
+  @override
+  String toString() => 'Fine($amount)';
+}
+
+
+class Member {
+  final String name;
+  final MemberType type;
+
+  Member(this.name, this.type);
+
+  Fine feeFor(LibraryItem item, int days) {
+    int fee = item.lateFee(days);
+    fee = LibraryItem.capFee(fee);
+    fee = type.applyDiscount(fee);
+
+    return Fine(fee);
+  }
+}
 
 
 void main() {
@@ -319,6 +390,86 @@ void step7() {
  /* The main benefit is readability and convenience. Instead of passing a value to a separate function, the extension allows you to use the operation directly on the value. For example, 72.rs clearly expresses formatting the integer as rupees.*/
 }
 
-void step8() { print('--- Step 8 ---'); }
-void step9() { print('--- Step 9 ---'); }
-void step10() { print('--- Step 10 ---'); }
+
+void step8() {
+  print('--- Step 8 ---');
+
+  Fine f1 = Fine(mainBook().lateFee(daysLate));
+  Fine f2 = Fine(mainMagazine().lateFee(daysLate));
+
+  print('Step 8: $f1 + $f2 = ${f1 + f2}');
+  print('Step 8: first bigger? ${f1 > f2}');
+  print('Step 8: equal copies? ${f1 == Fine(f1.amount)}');
+  print('Step 8: set size = ${{
+    f1,
+    Fine(f1.amount),
+    f2,
+  }.length}');
+
+  /*Answer: Without the custom hashCode, two Fine objects with the same amount may have different hash codes. A set uses both hashCode and == to identify unique values, so it may keep equal objects as separate entries. Dart expects equal objects to have equal hash codes so collections such as Set can handle equality correctly. With both methods implemented, the set size is 2.8*/
+}
+
+
+void step9() {
+  print('--- Step 9 ---');
+
+  LibraryItem.created = 0;
+
+  buildShelf();
+  List<LibraryItem> shelf = buildShelf();
+
+  print('Step 9: items created = ${LibraryItem.created}');
+
+  int cappedFee = LibraryItem.capFee(
+    shelf.first.lateFee(daysBig),
+  );
+
+  print('Step 9: capped fee = $cappedFee (cap $feeCap)');
+
+  print(
+    'Step 9: const copies identical? '
+    '${identical(const Fine(10), const Fine(10))}',
+  );
+
+  print(
+    'Step 9: new copies identical? '
+    '${identical(Fine(10), Fine(10))}',
+  );
+
+  /*Answer:because created is a static variable, it belongs to the LibraryItem class itself, not to individual objects. Therefore, we can access it directly using LibraryItem.created without creating an object first.*/
+}
+
+
+void step10() {
+  print('--- Step 10 ---');
+
+  List<LibraryItem> shelf = buildShelf();
+
+  Member member = Member(
+    'S$seed',
+    MemberType.values[seed % 3],
+  );
+
+  Fine total = shelf.fold(
+    Fine(0),
+    (sum, item) => sum + member.feeFor(item, daysLate),
+  );
+
+  int borrowableCount =
+      shelf.where((item) => item is Borrowable).length;
+
+  int renewableCount =
+      shelf.where((item) => item is Renewable).length;
+
+  print(
+    'Step 10: ${shelf.length} items, '
+    '$borrowableCount borrowable, '
+    '$renewableCount renewable',
+  );
+
+  print(
+    'Step 10: ${member.name} (${member.type.name}) owes $total',
+  );
+
+  print('Step 10: over the cap? ${total > Fine(feeCap)}');
+}
