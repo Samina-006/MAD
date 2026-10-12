@@ -16,3 +16,7 @@ Step06:
 /*Answer: MemberType.student refers to a predefined enum value, so Dart can check that the value belongs to the MemberType enum. A string such as 'student' can contain spelling mistakes or invalid names. Using an enum makes membership types more reliable and helps prevent invalid values.*/
 Step07:
 Answer: An extension lets me use a useful operation directly on an existing type without modifying its original class. Writing 72.rs is convenient and readable because the formatting operation is attached to the integer value. It also keeps related operations organised under an extension.
+Step08:
+/*Answer: Without the custom hashCode, two Fine objects with the same amount may have different hash codes. A set uses both hashCode and == to identify unique values, so it may keep equal objects as separate entries. Dart expects equal objects to have equal hash codes so collections such as Set can handle equality correctly. With both methods implemented, the set size is 2.8*/
+Step09:
+ /*Answer:because created is a static variable, it belongs to the LibraryItem class itself, not to individual objects. Therefore, we can access it directly using LibraryItem.created without creating an object first.*/
