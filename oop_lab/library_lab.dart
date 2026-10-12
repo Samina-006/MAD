@@ -153,6 +153,22 @@ enum MemberType {
       fee - (fee * discountPercent ~/ 100);
 }
 
+extension MoneyText on int {
+  String get rs => 'Rs $this';
+}
+
+extension Initials on String {
+  String get initials =>
+      split(' ').map((w) => w[0]).join();
+}
+
+extension ShelfMath on List<LibraryItem> {
+  int totalLateFee(int days) =>
+      fold(0, (sum, item) => sum + item.lateFee(days));
+}
+
+
+
 void main() {
   print('Seed: $seed (t=$t, u=$u)');
   step1();
@@ -279,7 +295,30 @@ void step6() {
   /*Answer: MemberType.student refers to a predefined enum value, so Dart can check that the value belongs to the MemberType enum. A string such as 'student' can contain spelling mistakes or invalid names. Using an enum makes membership types more reliable and helps prevent invalid values.*/
 }
 
-void step7() { print('--- Step 7 ---'); }
+
+void step7() {
+  print('--- Step 7 ---');
+
+  MemberType type = MemberType.values[seed % 3];
+  int fee = mainBook().lateFee(daysLate);
+  int discountedFee = type.applyDiscount(fee);
+
+  List<LibraryItem> shelf = [
+    mainBook(),
+    mainMagazine(),
+    mainDvd(),
+  ];
+
+  print('Step 7: ${discountedFee.rs}');
+  print('Step 7: initials of "${titles[u]}" = ${titles[u].initials}');
+  print(
+    'Step 7: shelf fee for $daysLate days = '
+    '${shelf.totalLateFee(daysLate).rs}',
+  );
+
+ /* The main benefit is readability and convenience. Instead of passing a value to a separate function, the extension allows you to use the operation directly on the value. For example, 72.rs clearly expresses formatting the integer as rupees.*/
+}
+
 void step8() { print('--- Step 8 ---'); }
 void step9() { print('--- Step 9 ---'); }
 void step10() { print('--- Step 10 ---'); }
