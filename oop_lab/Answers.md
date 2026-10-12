@@ -10,3 +10,5 @@ Step04:
 Answer: /*Answer: With @override: Dart reports an error because descibe() does not match a method in the parent class.
 Without @override: Dart may accept descibe() as a new method. When you call mainBook().describe(), Dart uses the inherited describe() method instead, so the output will be Database Systems (2012) without , 154 pages
 */
+Step05:
+Answer: A mixin allows us to reuse the same renewal code in Book and Dvd without duplicating it. Magazine does not need renewal behaviour, so placing renew() in LibraryItem would give the feature to every library item. The Renewable mixin allows only the classes that need it to use this behaviour
