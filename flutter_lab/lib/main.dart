@@ -89,10 +89,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            GoalBanner(
-              count: startCount,
-              max: maxCount,
-            ),
+            const Tally(),
           ],
         ),
       ),
@@ -139,7 +136,6 @@ class StudentCard extends StatelessWidget {
   }
 }
 
-// Step 4: GoalBanner displays the count, maximum, and percentage.
 class GoalBanner extends StatelessWidget {
   final int count;
   final int max;
@@ -161,8 +157,54 @@ class GoalBanner extends StatelessWidget {
   }
 }
 
-// Step 4 answer:
-// GoalBanner does not need setState because it only displays values received through its constructor and does not manage changing state.
+// Step 5: Tally is the widget configuration.
+// _TallyState stores and updates the changing count.
+class Tally extends StatefulWidget {
+  const Tally({super.key});
+
+  @override
+  State<Tally> createState() => _TallyState();
+}
+
+class _TallyState extends State<Tally> {
+  int _count = startCount;
+
+  void _plus() {
+    setState(() {
+      _count += stepSize;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Count: $_count',
+          key: const Key('count'),
+        ),
+        GoalBanner(
+          count: _count,
+          max: maxCount,
+        ),
+        Row(
+          children: [
+            ElevatedButton(
+              key: const Key('plus'),
+              onPressed: _plus,
+              child: Text('+$stepSize'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+//Step05:
+// Tally defines the widget, while _TallyState stores and manages
+// the changing count. They are separate so Flutter can manage
+// the state independently of the widget configuration.
 
 
 // ---- Provided for Step 7. It has a bug on purpose. Do not rename anything.
