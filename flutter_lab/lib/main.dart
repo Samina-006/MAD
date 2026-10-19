@@ -1,14 +1,13 @@
 
-
 import 'package:flutter/material.dart';
 
 const String studentName = 'Samina Shahid';
-const String rollNo = '04072313018'; // e.g. '21F-0347'
+const String rollNo = '04072313018';
 
 // ===== Seeded settings (generated from YOUR roll number). Do not edit. =====
 final int seed = int.parse(rollNo.substring(rollNo.length - 2));
-final int t = seed ~/ 10; // tens digit
-final int u = seed % 10; // units digit
+final int t = seed ~/ 10;
+final int u = seed % 10;
 
 const List<String> courses = [
   'Mobile Dev',
@@ -23,12 +22,12 @@ const List<String> courses = [
   'Security',
 ];
 
-final String course = courses[u]; // your course name
-final int startCount = 3 + u; // where the tally starts
-final int stepSize = 1 + t % 4; // how much + and - change the tally
-final int maxCount = 20 + 2 * t; // the tally may never go above this
-final int startSeconds = 5 + (t + u) % 6; // where the countdown starts
-final int bugStep = 1 + u % 4; // used by BuggyCounter in Step 7
+final String course = courses[u];
+final int startCount = 3 + u;
+final int stepSize = 1 + t % 4;
+final int maxCount = 20 + 2 * t;
+final int startSeconds = 5 + (t + u) % 6;
+final int bugStep = 1 + u % 4;
 // ===========================================================================
 
 // Step 9 writes to this list from initState and dispose.
@@ -61,10 +60,41 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Study Tracker: $course'),
       ),
-      body: StudentCard(
-        name: studentName,
-        roll: rollNo,
-        course: course,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StudentCard(
+              name: studentName,
+              roll: rollNo,
+              course: course,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Start: $startCount',
+                  key: const Key('info-start'),
+                ),
+                Text(
+                  'Step: $stepSize',
+                  key: const Key('info-step'),
+                ),
+                Text(
+                  'Max: $maxCount',
+                  key: const Key('info-max'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            GoalBanner(
+              count: startCount,
+              max: maxCount,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -109,11 +139,31 @@ class StudentCard extends StatelessWidget {
   }
 }
 
-// Step 2 answer:
-// The fields are final because a StatelessWidget should have an immutable
-// configuration. Removing final would allow reassignment of the fields.
-// It does not necessarily cause a compiler error, but it breaks the intended
-// immutability of this widget.
+// Step 4: GoalBanner displays the count, maximum, and percentage.
+class GoalBanner extends StatelessWidget {
+  final int count;
+  final int max;
+
+  const GoalBanner({
+    super.key,
+    required this.count,
+    required this.max,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final percent = count * 100 ~/ max;
+
+    return Text(
+      'Progress: $count of $max ($percent%)',
+      key: const Key('progress'),
+    );
+  }
+}
+
+// Step 4 answer:
+// GoalBanner does not need setState because it only displays values received through its constructor and does not manage changing state.
+
 
 // ---- Provided for Step 7. It has a bug on purpose. Do not rename anything.
 class BuggyCounter extends StatefulWidget {
