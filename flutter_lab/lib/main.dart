@@ -90,6 +90,8 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Tally(),
+            const SizedBox(height: 12),
+            const BuggyCounter(),
           ],
         ),
       ),
@@ -157,8 +159,6 @@ class GoalBanner extends StatelessWidget {
   }
 }
 
-// Step 5: Tally is the widget configuration.
-// _TallyState stores and updates the changing count.
 class Tally extends StatefulWidget {
   const Tally({super.key});
 
@@ -172,6 +172,26 @@ class _TallyState extends State<Tally> {
   void _plus() {
     setState(() {
       _count += stepSize;
+
+      if (_count > maxCount) {
+        _count = maxCount;
+      }
+    });
+  }
+
+  void _minus() {
+    setState(() {
+      _count -= stepSize;
+
+      if (_count < 0) {
+        _count = 0;
+      }
+    });
+  }
+
+  void _reset() {
+    setState(() {
+      _count = startCount;
     });
   }
 
@@ -195,19 +215,37 @@ class _TallyState extends State<Tally> {
               onPressed: _plus,
               child: Text('+$stepSize'),
             ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              key: const Key('minus'),
+              onPressed: _minus,
+              child: Text('-$stepSize'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              key: const Key('reset'),
+              onPressed: _reset,
+              child: const Text('Reset'),
+            ),
           ],
         ),
       ],
     );
   }
 }
-//Step05:
-// Tally defines the widget, while _TallyState stores and manages
-// the changing count. They are separate so Flutter can manage
-// the state independently of the widget configuration.
 
+// Step 5 answer:
+// Tally describes the widget, while _TallyState stores and manages
+// the changing count. Flutter manages the State separately.
+
+// Step 6 answer:
+// During hot reload, the widget code updates but the existing State is usually kept, so the count stays the same. During hot restart,the app starts again and a new State is created, so the count returns to startCount.
+//step7
+//// Before the fix, three taps made _clicks equal to 3,
+// but the screen still showed 0 because setState was missing.
 
 // ---- Provided for Step 7. It has a bug on purpose. Do not rename anything.
+
 class BuggyCounter extends StatefulWidget {
   const BuggyCounter({super.key});
 
@@ -230,7 +268,9 @@ class _BuggyCounterState extends State<BuggyCounter> {
         ElevatedButton(
           key: const Key('bug-button'),
           onPressed: () {
-            _clicks += bugStep;
+            setState(() {
+              _clicks += bugStep;
+            });
           },
           child: Text('+$bugStep'),
         ),
@@ -238,3 +278,6 @@ class _BuggyCounterState extends State<BuggyCounter> {
     );
   }
 }
+
+
+
