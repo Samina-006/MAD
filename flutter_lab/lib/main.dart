@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 const String studentName = 'Samina Shahid';
@@ -30,7 +31,6 @@ final int startSeconds = 5 + (t + u) % 6;
 final int bugStep = 1 + u % 4;
 // ===========================================================================
 
-// Step 9 writes to this list from initState and dispose.
 final List<String> lifecycleLog = <String>[];
 
 void main() => runApp(const LabApp());
@@ -90,6 +90,8 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Tally(),
+            const SizedBox(height: 12),
+            const Countdown(),
             const SizedBox(height: 12),
             const BuggyCounter(),
           ],
@@ -234,18 +236,72 @@ class _TallyState extends State<Tally> {
   }
 }
 
-// Step 5 answer:
-// Tally describes the widget, while _TallyState stores and manages
-// the changing count. Flutter manages the State separately.
+// Step 8: Countdown manages a timer and its remaining time.
+class Countdown extends StatefulWidget {
+  const Countdown({super.key});
+
+  @override
+  State<Countdown> createState() => _CountdownState();
+}
+
+class _CountdownState extends State<Countdown> {
+  late int _left;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _left = startSeconds;
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        setState(() {
+          _left--;
+        });
+
+        if (_left <= 0) {
+          timer.cancel();
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_left > 0) {
+      return Text(
+        'Time left: $_left s',
+        key: const Key('time-left'),
+      );
+    }
+
+    return const Text(
+      'Time is up!',
+      key: Key('time-left'),
+    );
+  }
+}
 
 // Step 6 answer:
-// During hot reload, the widget code updates but the existing State is usually kept, so the count stays the same. During hot restart,the app starts again and a new State is created, so the count returns to startCount.
-//step7
-//// Before the fix, three taps made _clicks equal to 3,
+// Hot reload usually keeps the existing State, so the count stays
+// the same. Hot restart creates a new State, so the count resets.
+
+// Step 7 answer:
+// Before the fix, three taps made _clicks equal to 3,
 // but the screen still showed 0 because setState was missing.
 
-// ---- Provided for Step 7. It has a bug on purpose. Do not rename anything.
+// Step 8 answer:
+/* Without cancelling the timer, it could call setState after the widget is removed. Flutter then reports: "setState() called after dispose()".*/
 
+// ---- Provided for Step 7. Do not rename anything.
 class BuggyCounter extends StatefulWidget {
   const BuggyCounter({super.key});
 
@@ -278,6 +334,3 @@ class _BuggyCounterState extends State<BuggyCounter> {
     );
   }
 }
-
-
-
