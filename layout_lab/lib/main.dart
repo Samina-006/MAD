@@ -103,13 +103,12 @@ class HomePage extends StatelessWidget {
   const SizedBox(height: 12),
   const Clock(),
   const SizedBox(height: 12),
-  Row(
-    children: [
-      Tile(tileA),
-      Tile(tileB),
-      Tile(tileC),
-    ],
-  ),
+  const SwapBoard(),
+  const InfoPanel(),
+  const SizedBox(height: 12),
+  const SummaryRow(),
+  const SizedBox(height: 12),
+   ShareRow(),
 ],
         ),
       ),
@@ -137,6 +136,7 @@ class SettingsCard extends StatelessWidget {
   }
 }
 
+
 class SummaryRow extends StatelessWidget {
   const SummaryRow({super.key});
 
@@ -144,22 +144,37 @@ class SummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(
-          'Part A: read the widget tree of the $course board from top to bottom.',
-          key: const Key('sum-a'),
+        Expanded(
+          child: Text(
+            'Part A: read the widget tree of the $course board from top to bottom.',
+            key: const Key('sum-a'),
+          ),
         ),
-        Text(
-          'Part B: build each box from small widgets and never extend a built-in class.',
-          key: const Key('sum-b'),
+        Expanded(
+          child: Text(
+            'Part B: build each box from small widgets and never extend a built-in class.',
+            key: const Key('sum-b'),
+          ),
         ),
-        Text(
-          'Part C: break the layout on purpose, then fix it with Expanded or Wrap.',
-          key: const Key('sum-c'),
+        Expanded(
+          child: Text(
+            'Part C: break the layout on purpose, then fix it with Expanded or Wrap.',
+            key: const Key('sum-c'),
+          ),
         ),
       ],
     );
   }
 }
+
+/*
+STEP 7 ANSWER
+
+Expanded gives each Text a limited share of the Row's available
+width. Flutter passes these width constraints down to the Text
+widgets, and their resulting sizes go back up. Each Text wraps its
+words within its allocated width, preventing the horizontal overflow.
+*/
 
 // Steps 1, 2 and 3: Clock, lifecycle and BuildContext experiment.
 class Clock extends StatefulWidget {
@@ -322,3 +337,159 @@ its own State and label. Flutter prefers composition because small,
 reusable widgets can be combined and changed easily without creating
 a separate subclass for every variation.
 */
+
+ // STEP 5: Swap tiles while preserving their State using ValueKey.
+class SwapBoard extends StatefulWidget {
+  const SwapBoard({super.key});
+
+  @override
+  State<SwapBoard> createState() => _SwapBoardState();
+}
+
+class _SwapBoardState extends State<SwapBoard> {
+  var tiles = [
+    Tile(tileA, key: ValueKey(tileA)),
+    Tile(tileB, key: ValueKey(tileB)),
+    Tile(tileC, key: ValueKey(tileC)),
+  ];
+
+  void swap() => setState(() => tiles = tiles.reversed.toList());
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(children: tiles),
+        ElevatedButton(
+          key: const Key('swap'),
+          onPressed: swap,
+          child: const Text('Swap'),
+        ),
+      ],
+    );
+  }
+}
+
+/*
+STEP 5 ANSWER
+
+Without keys, Flutter matches widgets mainly by their type and
+position. When the tiles are reordered, the existing Element and
+its State can remain at the same position, so the tap count may
+stay on the left while the displayed label changes. ValueKey
+identifies each tile by its label, allowing Flutter to match the
+correct widget and preserve its State when the order changes.
+*/
+
+class InfoPanel extends StatelessWidget {
+  const InfoPanel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          key: const Key('info-row'),
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              'Start: $startSec s',
+              key: const Key('row-a'),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Tick: $tick s',
+              key: const Key('row-b'),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Stop: $stopAt s',
+              key: const Key('row-c'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Column(
+          key: const Key('info-col'),
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Name: $studentName',
+              key: const Key('col-a'),
+            ),
+            Text(
+              'Roll no: $rollNo',
+              key: const Key('col-b'),
+            ),
+            Text(
+              'Course: $course',
+              key: const Key('col-c'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/*
+STEP 6 ANSWER
+
+In a Column, the main axis is vertical because its children are
+arranged from top to bottom. The cross axis is horizontal, so
+CrossAxisAlignment.center moves the children left or right to
+the horizontal center instead of moving them up or down.
+*/
+
+class ShareRow extends StatelessWidget {
+  const ShareRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      key: const Key('share-row'),
+      children: [
+        SizedBox(
+          key: const Key('fixed'),
+          width: fixedW,
+          child: ElevatedButton(
+            onPressed: () {},
+            child: const Text('F'),
+          ),
+        ),
+        Expanded(
+          flex: flexA,
+          child: ElevatedButton(
+            key: const Key('exp'),
+            onPressed: () {},
+            child: const Text('Exp'),
+          ),
+        ),
+        Flexible(
+          flex: flexB,
+          child: ElevatedButton(
+            key: const Key('flex'),
+            onPressed: () {},
+            child: const Text('Flex'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/*
+STEP 8 ANSWER
+
+Expanded receives its proportional share of the remaining width and
+must fill that space. Flexible also receives a proportional share,
+but its child can remain smaller when using its default loose fit.
+
+Expanded is equivalent to Flexible with fit: FlexFit.tight. If we
+swap Expanded and Flexible between the two buttons, the Flex button
+will be forced to fill its share while the Exp button may stay smaller.
+*/
+
+
