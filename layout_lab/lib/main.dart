@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 const String studentName = 'Samina Shahid';
 const String rollNo = '04072313018';
 
-// ===== Seeded settings (generated from roll number). Do not edit. =====
+// Seeded settings generated from the roll number. Do not edit.
 final int seed = int.parse(rollNo.substring(rollNo.length - 2));
 final int t = seed ~/ 10;
 final int u = seed % 10;
@@ -96,11 +96,21 @@ class HomePage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            SettingsCard(),
-            SizedBox(height: 12),
-            Clock(),
-          ],
+          children: [
+  const SettingsCard(),
+  const SizedBox(height: 12),
+  const Welcome(),
+  const SizedBox(height: 12),
+  const Clock(),
+  const SizedBox(height: 12),
+  Row(
+    children: [
+      Tile(tileA),
+      Tile(tileB),
+      Tile(tileC),
+    ],
+  ),
+],
         ),
       ),
     );
@@ -151,7 +161,7 @@ class SummaryRow extends StatelessWidget {
   }
 }
 
-// STEP 1, 2 AND 3: Clock, lifecycle and BuildContext experiment.
+// Steps 1, 2 and 3: Clock, lifecycle and BuildContext experiment.
 class Clock extends StatefulWidget {
   const Clock({super.key});
 
@@ -167,12 +177,10 @@ class _ClockState extends State<Clock> {
   @override
   void initState() {
     super.initState();
-
-    // I record when the State object is first created.
     lifecycleLog.add('initState');
 
-    // The timer starts here only once. Starting it inside build()
-    // would create repeated timers whenever Flutter rebuilt the widget.
+    // The timer starts once here. Starting it inside build() could
+    // create repeated timers whenever Flutter rebuilds this widget.
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() => _seconds += tick);
 
@@ -184,7 +192,6 @@ class _ClockState extends State<Clock> {
 
   @override
   Widget build(BuildContext context) {
-    // Each call to build is counted for the Step 2 experiment.
     _builds++;
 
     return Column(
@@ -198,9 +205,6 @@ class _ClockState extends State<Clock> {
           'Builds: $_builds',
           key: const Key('builds'),
         ),
-
-        // Step 3: Probe must be the third child and must NOT be const,
-        // because seconds changes whenever the timer updates.
         Probe(seconds: _seconds),
       ],
     );
@@ -208,34 +212,32 @@ class _ClockState extends State<Clock> {
 
   @override
   void dispose() {
-    // I stop the timer before this State object is destroyed.
     _timer.cancel();
     lifecycleLog.add('dispose');
     super.dispose();
   }
 
   /*
-    STEP 2 ANSWERS
-   
-   * Q1: Why does Builds increase once per second, not twice?
-    The timer calls setState() once each second, requesting a rebuild.
-    The build() method does not call setState() again.
-   
-   * Q2: What happens if the timer is not cancelled in dispose()?
-     The timer could try to call setState() after the widget is removed.
-    Flutter may report "setState() called after dispose()".
-    Cancelling the timer prevents this problem.
-   
-   * STEP 3 ANSWERS
-   
-    The Widget is the lightweight description of the interface. Flutter
-    creates new widget objects during rebuilds. The Element stays at its
-    position in the tree and manages the connection to the widget and its
-    State. The RenderObject handles layout, painting and hit testing.
-   */
+  STEP 2 ANSWERS
+
+  Builds increases once per second because the timer calls setState()
+  once per second, requesting a rebuild. The build() method does not
+  call setState() again.
+
+  If the timer is not cancelled in dispose(), it could call setState()
+  after the widget is removed, causing the error "setState() called
+  after dispose()". Cancelling the timer prevents this problem.
+
+  STEP 3 ANSWER
+
+  A Widget is a lightweight description of the interface and new
+  Widget objects are created during rebuilds. The Element stays in
+  the tree and manages the connection to the Widget and its State.
+  The RenderObject handles layout, painting and hit testing.
+  */
 }
 
-// STEP 3: Observe Widget identity, Element identity and BuildContext.
+// Step 3: Observe Widget identity, Element identity and BuildContext.
 class Probe extends StatelessWidget {
   final int seconds;
 
@@ -243,8 +245,6 @@ class Probe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // BuildContext identifies this widget's location in the Element tree.
-    // This checks whether a Scaffold exists above Probe in the tree.
     final bool above =
         context.findAncestorWidgetOfExactType<Scaffold>() != null;
 
@@ -276,3 +276,49 @@ class Probe extends StatelessWidget {
   }
 }
 
+// STEP 4.1: Composition using small widgets.
+class Welcome extends StatelessWidget {
+  const Welcome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'Welcome, $studentName',
+        key: const Key('welcome'),
+      ),
+    );
+  }
+}
+
+// STEP 4.2: Each Tile maintains its own tap count in its State object.
+class Tile extends StatefulWidget {
+  const Tile(this.label, {super.key});
+
+  final String label;
+
+  @override
+  State<Tile> createState() => _TileState();
+}
+
+class _TileState extends State<Tile> {
+  int taps = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => setState(() => taps++),
+      child: Text('${widget.label}: $taps'),
+    );
+  }
+}
+
+/*
+STEP 4 ANSWER
+
+This style is called composition. Instead of creating a new class
+that extends ElevatedButton, Tile combines an ElevatedButton with
+its own State and label. Flutter prefers composition because small,
+reusable widgets can be combined and changed easily without creating
+a separate subclass for every variation.
+*/
