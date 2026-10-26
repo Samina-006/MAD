@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 
@@ -108,7 +107,11 @@ class HomePage extends StatelessWidget {
   const SizedBox(height: 12),
   const SummaryRow(),
   const SizedBox(height: 12),
-   ShareRow(),
+   const ShareRow(),
+  const SizedBox(height: 12),
+  const InfoBox(),
+  const SizedBox(height: 12),
+  const StampStack(),
 ],
         ),
       ),
@@ -491,5 +494,86 @@ Expanded is equivalent to Flexible with fit: FlexFit.tight. If we
 swap Expanded and Flexible between the two buttons, the Flex button
 will be forced to fill its share while the Exp button may stay smaller.
 */
+
+class InfoBox extends StatelessWidget {
+  const InfoBox({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('info-box'),
+      margin: EdgeInsets.all(boxMargin),
+      padding: EdgeInsets.all(boxPad),
+      decoration: BoxDecoration(
+        color: swatches[hue]!.shade100,
+        borderRadius: BorderRadius.circular(boxRadius),
+        border: Border.all(width: boxBorder),
+      ),
+      child: Text(
+        'Course: $course',
+        key: const Key('box-text'),
+      ),
+    );
+  }
+}
+
+/*
+STEP 9 ANSWER
+
+Padding is the space inside the border, between the border and the
+child. Margin is the space outside the border, separating the box
+from nearby widgets. I would use Padding when I only need space
+around a child, and SizedBox when I need a fixed gap or size.
+Container is useful when I also need decoration, a background,
+borders, or margins.
+*/
+
+class StampStack extends StatelessWidget {
+  const StampStack({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      key: const Key('stack'),
+      children: [
+        Container(
+          key: const Key('layer-base'),
+          width: 300,
+          height: 120,
+          color: Colors.grey.shade300,
+        ),
+        Positioned(
+          top: dotTop,
+          right: dotRight,
+          child: const Icon(
+            Icons.star,
+            key: Key('dot-top'),
+          ),
+        ),
+        Positioned(
+          bottom: dotBottom,
+          left: dotLeft,
+          child: const Icon(
+            Icons.circle,
+            key: Key('dot-bottom'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/*
+STEP 10 ANSWER
+
+The Stack's size is determined by its non-positioned children.
+Here, the grey Container sets the Stack size to 300 by 120 pixels.
+The Positioned icons are placed relative to that area. If the icons
+came first and the grey Container last, the grey Container would
+paint over the icons because later children appear above earlier
+children in a Stack.
+*/
+
+
 
 
